@@ -1,43 +1,47 @@
 from gtts import gTTS
-import os
 from tkinter import *
 from tkinter import ttk
+import os
 
-mainWindow = Tk()
-mainWindow.geometry()
-mainWindow.title('TTS')
+class Window:
+    def __init__(self) -> None:
+        self.mainWindow = Tk()
+        self.mainWindow.title('TTS')
 
-ttk.Label(mainWindow, text = 'Enter the title: ', font = ('Helvetica, 14')).grid(ipadx = 10, sticky = W)
-title = ttk.Entry(mainWindow)
-title.grid(sticky = W, ipadx = 80)
+        ttk.Label(self.mainWindow, text = 'Enter title: ', font = ('Helvetica, 14')).grid(ipadx = 10, sticky = W)
+        self.title = ttk.Entry(self.mainWindow)
+        self.title.grid(sticky = W, ipadx = 80)
 
-ttk.Label(mainWindow, text = 'Enter your text here: ', font = ('Helvetica, 14')).grid(ipadx = 10)
+        ttk.Label(self.mainWindow, text = 'Enter text here: ', font = ('Helvetica, 14')).grid(ipadx = 10)
 
-# Defining the scrollbar, text and button widget
+        self.textFrame = ttk.Frame(self.mainWindow)
+        self.textFrame.grid()
 
-textFrame = ttk.Frame(mainWindow)
-textFrame.grid()
+        self.scroll = Scrollbar(self.textFrame, orient = VERTICAL)
+        self.scroll.pack(side = RIGHT, fill = 'y')
+        
+        self.txt = Text(self.textFrame, font = ('Helvetica, 14'), yscrollcommand = self.scroll.set)
+        self.scroll.config(command = self.txt.yview)
+        self.txt.pack()
 
-scroll = Scrollbar(textFrame, orient='vertical')
-scroll.pack(side = RIGHT, fill = 'y')
+        self.go = ttk.Button(self.textFrame, text = 'Convert', command = self.convert)
+        self.go.pack()
 
-txt = Text(textFrame, font = ('Helvetica, 14'), yscrollcommand = scroll.set)
-scroll.config(command = txt.yview)
-txt.pack()
+        self.mainWindow.mainloop()
 
-def convert():
-    playWindow = Toplevel(mainWindow)
-    playWindow.title('Play')
+    def convert(self):
+        self.playWindow = Toplevel()
+        self.playWindow.title('Play')
 
-    convertTxt = txt.get(1.0, 'end-1c')
-    language = 'en'
+        self.convertTxt = self.txt.get(1.0, 'end-1c')
+        self.language = 'en'
 
-    converted = gTTS(text = convertTxt, lang = language, slow = False)
-    converted.save(f"{title.get()}.mp3")
+        self.converted = gTTS(text = self.convertTxt, lang = self.language, slow = False)
+        self.converted.save(f"{self.title.get()}.mp3")
 
-    ttk.Button(playWindow, text = 'Play', command = os.system(f"start {title.get()}.mp3")).pack()
+        ttk.Button(self.playWindow, text = 'Play', command = os.system(f"cvlc {self.title.get()}.mp3")).pack()
 
-go = ttk.Button(textFrame, text = 'Convert', command = convert)
-go.pack()
+        self.playWindow.mainloop()
 
-mainWindow.mainloop()
+if __name__ == '__main__':
+    Window()
