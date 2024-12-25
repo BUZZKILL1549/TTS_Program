@@ -19,7 +19,7 @@ class Window:
 
         self.scroll = Scrollbar(self.textFrame, orient = VERTICAL)
         self.scroll.pack(side = RIGHT, fill = 'y')
-        
+
         self.txt = Text(self.textFrame, font = ('Helvetica, 14'), yscrollcommand = self.scroll.set)
         self.scroll.config(command = self.txt.yview)
         self.txt.pack()
